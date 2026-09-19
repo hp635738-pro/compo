@@ -3,7 +3,7 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowUp,
-  BrainCog,
+  Type,
   Boxes,
   Globe,
   Mic,
@@ -646,7 +646,7 @@ export const PromptInputBox = React.forwardRef(
       if (input.trim() || files.length > 0) {
         let messagePrefix = "";
         if (showSearch) messagePrefix = "[Search: ";
-        else if (showThink) messagePrefix = "[Think: ";
+        else if (showThink) messagePrefix = "[Text: ";
         else if (selectedModel) messagePrefix = `[${selectedModel}: `;
         const formattedInput = messagePrefix
           ? `${messagePrefix}${input}]`
@@ -754,7 +754,7 @@ export const PromptInputBox = React.forwardRef(
                     showSearch
                       ? "Search the web..."
                       : showThink
-                        ? "Think deeply..."
+                        ? "Type your text..."
                         : placeholder
                   }
                   className="text-base"
@@ -772,8 +772,7 @@ export const PromptInputBox = React.forwardRef(
               aria-hidden={!showCanvas || undefined}
             >
               <div className="overflow-hidden">
-                {showCanvas && (
-                  <div className="flex min-h-[96px] w-full flex-col gap-2 px-3 py-2.5">
+                <div className="flex min-h-[96px] w-full flex-col gap-2 px-3 py-2.5">
                     <p className="text-xs tracking-widest text-gray-500 uppercase">
                       Select a model
                     </p>
@@ -782,14 +781,22 @@ export const PromptInputBox = React.forwardRef(
                         <motion.button
                           key={model}
                           type="button"
-                          initial={{ opacity: 0, scale: 0.85, y: 6 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          transition={{
-                            delay: 0.08 + i * 0.05,
-                            type: "spring",
-                            stiffness: 400,
-                            damping: 24,
-                          }}
+                          initial={false}
+                          animate={
+                            showCanvas
+                              ? { opacity: 1, scale: 1, y: 0 }
+                              : { opacity: 0, scale: 0.85, y: 6 }
+                          }
+                          transition={
+                            showCanvas
+                              ? {
+                                  delay: 0.08 + i * 0.05,
+                                  type: "spring",
+                                  stiffness: 400,
+                                  damping: 24,
+                                }
+                              : { duration: 0.15 }
+                          }
                           onClick={() => {
                             setSelectedModel(model);
                             setShowCanvas(false);
@@ -807,7 +814,6 @@ export const PromptInputBox = React.forwardRef(
                       ))}
                     </div>
                   </div>
-                )}
               </div>
             </div>
           </div>
@@ -920,25 +926,25 @@ export const PromptInputBox = React.forwardRef(
                   <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center">
                     <motion.div
                       animate={{
-                        rotate: showThink ? 360 : 0,
-                        scale: showThink ? 1.1 : 1,
+                        scale: showThink ? 1.2 : 1,
+                        y: showThink ? -2 : 0,
                       }}
                       whileHover={{
-                        rotate: showThink ? 360 : 15,
-                        scale: 1.1,
+                        scale: 1.15,
+                        y: -1,
                         transition: {
                           type: "spring",
-                          stiffness: 300,
-                          damping: 10,
+                          stiffness: 500,
+                          damping: 15,
                         },
                       }}
                       transition={{
                         type: "spring",
-                        stiffness: 260,
-                        damping: 25,
+                        stiffness: 500,
+                        damping: 18,
                       }}
                     >
-                      <BrainCog
+                      <Type
                         className={cn(
                           "h-4 w-4",
                           showThink ? "text-[#8B5CF6]" : "text-inherit",
@@ -955,7 +961,7 @@ export const PromptInputBox = React.forwardRef(
                         transition={{ duration: 0.2 }}
                         className="flex-shrink-0 overflow-hidden whitespace-nowrap text-[#8B5CF6] text-xs"
                       >
-                        Think
+                        Text
                       </motion.span>
                     )}
                   </AnimatePresence>

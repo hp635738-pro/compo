@@ -8,10 +8,10 @@ export default function Home() {
   const [lastFiles, setLastFiles] = useState<File[]>([]);
 
   return (
-    <div className="flex h-screen w-full flex-col">
+    <div className="flex h-screen w-full flex-col bg-black">
       <main className="flex flex-1 flex-col items-stretch justify-end overflow-y-auto px-4 pb-4">
         {lastMessage !== null && (
-          <div className="w-full rounded-2xl bg-black/40 px-5 py-4 text-sm text-white/90 backdrop-blur">
+          <div className="w-full rounded-2xl border border-white/10 bg-neutral-900 px-5 py-4 text-sm text-white/90">
             <p className="mb-1 text-xs tracking-widest text-white/60 uppercase">
               Sent{lastFiles.length > 0 ? ` · ${lastFiles.length} file(s)` : ""}
             </p>
