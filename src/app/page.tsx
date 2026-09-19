@@ -50,6 +50,7 @@ export default function Home() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const active = convos.find((c) => c.id === activeId) ?? null;
+  const isEmpty = !active && !pending;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -130,23 +131,14 @@ export default function Home() {
         <div className="absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-[#1EAEDB]/10 blur-3xl" />
       </div>
 
-      <div
-        className={`relative flex min-w-0 flex-1 flex-col ${
-          active || pending ? "" : "justify-center pb-16"
-        }`}
-      >
+      <div className="relative flex min-w-0 flex-1 flex-col">
         <main
           className={`${
-            active || pending ? "flex-1 overflow-y-auto" : ""
-          } px-4 py-4`}
+            isEmpty ? "overflow-hidden" : "overflow-y-auto"
+          } flex-1 px-4 py-4`}
         >
-          <div
-            className={`flex flex-col gap-3 ${
-              active || pending ? "min-h-full" : ""
-            }`}
-          >
-            {active || pending ? <div className="mt-auto" /> : null}
-            {!active && !pending && (
+          {isEmpty ? (
+            <div className="flex h-full flex-col justify-center pb-16">
               <div className="mb-8 text-center">
                 <h1 className="text-3xl font-light text-white/85">
                   How can I help today?
@@ -155,7 +147,17 @@ export default function Home() {
                   Type a command or ask a question
                 </p>
               </div>
-            )}
+              <PromptInputBox
+                onSend={handleSend}
+                placeholder="Type your message here...."
+                hasConversation={false}
+                onNewChat={startNewChat}
+                onModeChange={setMode}
+              />
+            </div>
+          ) : (
+            <div className="flex min-h-full flex-col gap-3">
+              <div className="mt-auto" />
             {active?.msgs.map((m, i) =>
               m.role === "user" ? (
                 <div
@@ -197,9 +199,11 @@ export default function Home() {
               </div>
             )}
             <div ref={bottomRef} />
-          </div>
+            </div>
+          )}
         </main>
 
+        {!isEmpty && (
         <footer className="px-4 pb-6">
           <div className="w-full">
             <PromptInputBox
@@ -211,6 +215,7 @@ export default function Home() {
             />
           </div>
         </footer>
+        )}
       </div>
 
       <aside className="relative flex w-64 flex-shrink-0 flex-col border-l border-white/10 bg-neutral-950 md:w-72">
