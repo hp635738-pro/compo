@@ -603,7 +603,7 @@ export const PromptInputBox = React.forwardRef(
         let messagePrefix = "";
         if (showSearch) messagePrefix = "[Search: ";
         else if (showThink) messagePrefix = "[Think: ";
-        else if (showCanvas) messagePrefix = "[Canvas: ";
+        else if (showCanvas) messagePrefix = "[Models: ";
         const formattedInput = messagePrefix
           ? `${messagePrefix}${input}]`
           : input;
@@ -702,7 +702,7 @@ export const PromptInputBox = React.forwardRef(
                   : showThink
                     ? "Think deeply..."
                     : showCanvas
-                      ? "Create on canvas..."
+                      ? "Create on models..."
                       : placeholder
               }
               className="text-base"
@@ -908,7 +908,7 @@ export const PromptInputBox = React.forwardRef(
                         transition={{ duration: 0.2 }}
                         className="flex-shrink-0 overflow-hidden whitespace-nowrap text-[#F97316] text-xs"
                       >
-                        Canvas
+                        Models
                       </motion.span>
                     )}
                   </AnimatePresence>
