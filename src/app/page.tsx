@@ -123,10 +123,6 @@ export default function Home() {
         <div className="absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-[#1EAEDB]/10 blur-3xl" />
       </div>
 
-      <div className="dark relative z-10 h-full flex-shrink-0 max-md:hidden">
-        <SidebarNav />
-      </div>
-
       <div className="relative flex min-w-0 flex-1 flex-col">
         <main
           className={`${
@@ -214,6 +210,9 @@ export default function Home() {
         )}
       </div>
 
+      <div className="dark relative z-10 h-full flex-shrink-0 max-md:hidden">
+        <SidebarNav />
+      </div>
     </div>
   );
 }

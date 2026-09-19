@@ -494,7 +494,7 @@ export const PromptInputBox = React.forwardRef(
       null,
     );
     const [showSearch, setShowSearch] = React.useState(false);
-    const [showThink, setShowThink] = React.useState(false);
+    const [showThink, setShowThink] = React.useState(true);
     const [showCode, setShowCode] = React.useState(false);
     const [showCanvas, setShowCanvas] = React.useState(false);
     const [selectedModel, setSelectedModel] = React.useState<string | null>(
