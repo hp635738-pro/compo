@@ -59,6 +59,18 @@ export default function Home() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [convos, pending]);
 
+  // Diagnostic ping: reports the iframe viewport size to the server log so we
+  // can tell whether the black band is inside or outside the app viewport.
+  useEffect(() => {
+    try {
+      void fetch(
+        `/api/vh?w=${window.innerWidth}&h=${window.innerHeight}&d=${document.documentElement.clientHeight}`,
+      );
+    } catch {
+      // ignore
+    }
+  }, []);
+
   const startNewChat = () => {
     setActiveId(null);
     setPending(false);
