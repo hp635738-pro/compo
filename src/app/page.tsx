@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { PanelRightClose, PanelRightOpen } from "lucide-react";
 import { ModelIcon, PromptInputBox } from "@/components/ui/ai-prompt-box";
 import { SidebarNav } from "@/components/ui/dashboard-sidebar";
 import { ThinkingOrb } from "@/components/ui/thinking-orbs";
@@ -46,6 +47,7 @@ export default function Home() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [mode, setMode] = useState<Mode>("text");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const replyIdx = useRef(0);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -124,6 +126,18 @@ export default function Home() {
       </div>
 
       <div className="relative flex min-w-0 flex-1 flex-col">
+        <button
+          type="button"
+          title={sidebarOpen ? "Close sidebar" : "Open sidebar"}
+          onClick={() => setSidebarOpen((o) => !o)}
+          className="absolute top-3 right-3 z-20 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-neutral-900/80 text-white/60 backdrop-blur transition-colors hover:bg-white/10 hover:text-white max-md:hidden"
+        >
+          {sidebarOpen ? (
+            <PanelRightClose className="h-4 w-4" />
+          ) : (
+            <PanelRightOpen className="h-4 w-4" />
+          )}
+        </button>
         <main
           className={`${
             isEmpty ? "overflow-hidden" : "overflow-y-auto"
@@ -210,7 +224,11 @@ export default function Home() {
         )}
       </div>
 
-      <div className="dark relative z-10 h-full flex-shrink-0 max-md:hidden">
+      <div
+        className={`dark relative z-10 h-full flex-shrink-0 overflow-hidden transition-[width] duration-300 ease-in-out max-md:hidden ${
+          sidebarOpen ? "w-[260px]" : "w-0"
+        }`}
+      >
         <SidebarNav />
       </div>
     </div>
