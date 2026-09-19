@@ -9,9 +9,9 @@ export default function Home() {
 
   return (
     <div className="flex h-screen w-full flex-col">
-      <main className="flex flex-1 flex-col items-center justify-end overflow-y-auto px-4 pb-4">
+      <main className="flex flex-1 flex-col items-stretch justify-end overflow-y-auto px-4 pb-4">
         {lastMessage !== null && (
-          <div className="w-[500px] max-w-full rounded-2xl bg-black/40 px-5 py-4 text-sm text-white/90 backdrop-blur">
+          <div className="w-full rounded-2xl bg-black/40 px-5 py-4 text-sm text-white/90 backdrop-blur">
             <p className="mb-1 text-xs tracking-widest text-white/60 uppercase">
               Sent{lastFiles.length > 0 ? ` · ${lastFiles.length} file(s)` : ""}
             </p>
@@ -27,8 +27,8 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="flex justify-center px-4 pb-6">
-        <div className="w-[500px] max-w-full">
+      <footer className="px-4 pb-6">
+        <div className="w-full">
           <PromptInputBox
             onSend={(message, files) => {
               setLastMessage(message);
