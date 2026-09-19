@@ -7,7 +7,13 @@ import { ThinkingOrb } from "@/components/ui/thinking-orbs";
 
 type Msg = { role: "user" | "assistant"; text: string };
 type Mode = "text" | "search" | "models" | "code";
-type Convo = { id: string; title: string; msgs: Msg[]; createdAt: number };
+type Convo = {
+  id: string;
+  title: string;
+  msgs: Msg[];
+  createdAt: number;
+  model?: string;
+};
 
 const ORB_STATE: Record<
   Mode,
@@ -62,7 +68,11 @@ export default function Home() {
     }
   };
 
-  const handleSend = (message: string, files?: File[]) => {
+  const handleSend = (
+    message: string,
+    files?: File[],
+    meta?: { model?: string },
+  ) => {
     const fileNote =
       files && files.length > 0 ? `  ·  📎 ${files.length} file(s)` : "";
     const userMsg: Msg = { role: "user", text: message + fileNote };
@@ -75,12 +85,17 @@ export default function Home() {
         title: message.slice(0, 42) || "New chat",
         msgs: [userMsg],
         createdAt: Date.now(),
+        model: meta?.model,
       };
       setConvos((cs) => [convo, ...cs]);
       setActiveId(id);
     } else {
       setConvos((cs) =>
-        cs.map((c) => (c.id === id ? { ...c, msgs: [...c.msgs, userMsg] } : c)),
+        cs.map((c) =>
+          c.id === id
+            ? { ...c, model: meta?.model ?? c.model, msgs: [...c.msgs, userMsg] }
+            : c,
+        ),
       );
     }
     setPending(true);
@@ -99,11 +114,23 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-screen w-full bg-black">
-      <div className="flex min-w-0 flex-1 flex-col">
+    <div className="relative flex h-screen w-full overflow-hidden bg-black">
+      {/* decorative background */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(75%_65%_at_50%_35%,black,transparent)]" />
+        <div className="absolute -top-28 left-1/2 h-72 w-[38rem] -translate-x-1/2 rounded-full bg-[#F97316]/15 blur-3xl" />
+        <div className="absolute top-1/3 -left-24 h-64 w-64 rounded-full bg-[#8B5CF6]/10 blur-3xl" />
+        <div className="absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-[#1EAEDB]/10 blur-3xl" />
+      </div>
+
+      <div className="relative flex min-w-0 flex-1 flex-col">
         <main className="flex-1 overflow-y-auto px-4 py-4">
           <div className="flex min-h-full flex-col gap-3">
-            <div className="mt-auto" />
+            {active || pending ? (
+              <div className="mt-auto" />
+            ) : (
+              <div className="h-[20vh]" />
+            )}
             {!active && !pending && (
               <div className="mb-8 text-center">
                 <h1 className="text-3xl font-light text-white/85">
@@ -125,7 +152,7 @@ export default function Home() {
               ) : (
                 <div
                   key={i}
-                  className="max-w-[80%] self-start rounded-2xl border border-white/10 bg-neutral-900 px-4 py-3 text-sm break-words whitespace-pre-wrap text-white/90"
+                  className="max-w-[80%] self-start rounded-2xl border border-white/10 bg-neutral-900/80 px-4 py-3 text-sm break-words whitespace-pre-wrap text-white/90 backdrop-blur"
                 >
                   {m.text}
                 </div>
@@ -162,7 +189,7 @@ export default function Home() {
         </footer>
       </div>
 
-      <aside className="flex w-72 flex-shrink-0 flex-col border-l border-white/10 bg-neutral-950 max-md:hidden">
+      <aside className="relative flex w-72 flex-shrink-0 flex-col border-l border-white/10 bg-neutral-950 max-md:hidden">
         <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
           <h2 className="text-sm font-medium text-white/80">History</h2>
           <button
@@ -204,8 +231,13 @@ export default function Home() {
               }`}
             >
               <MessageSquare className="h-3.5 w-3.5 flex-shrink-0" />
-              <span className="min-w-0 flex-1 truncate text-xs">
-                {c.title}
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-xs">{c.title}</span>
+                {c.model && (
+                  <span className="block truncate text-[10px] text-[#F97316]/80">
+                    ↳ {c.model}
+                  </span>
+                )}
               </span>
               <button
                 type="button"

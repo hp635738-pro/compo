@@ -454,7 +454,11 @@ const ModelLogo: React.FC<{ name: string; className?: string }> = ({
 
 // Main PromptInputBox Component
 interface PromptInputBoxProps {
-  onSend?: (message: string, files?: File[]) => void;
+  onSend?: (
+    message: string,
+    files?: File[],
+    meta?: { model?: string },
+  ) => void;
   isLoading?: boolean;
   placeholder?: string;
   className?: string;
@@ -530,7 +534,7 @@ export const PromptInputBox = React.forwardRef(
 
     const handleCodeToggle = () => requestMode("code");
 
-    const handleCanvasToggle = () => requestMode("models");
+    const handleCanvasToggle = () => applyMode("models");
 
     const confirmNewChat = () => {
       if (!pendingMode) return;
@@ -620,7 +624,7 @@ export const PromptInputBox = React.forwardRef(
         const formattedInput = messagePrefix
           ? `${messagePrefix}${input}]`
           : input;
-        onSend(formattedInput, files);
+        onSend(formattedInput, files, { model: selectedModel ?? undefined });
         setInput("");
         setFiles([]);
         setFilePreviews({});
