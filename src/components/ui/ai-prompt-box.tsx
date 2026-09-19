@@ -739,16 +739,40 @@ export const PromptInputBox = React.forwardRef(
               isRecording ? "h-0 overflow-hidden opacity-0" : "opacity-100",
             )}
           >
-            <AnimatePresence initial={false} mode="wait">
-              {showCanvas ? (
-                <motion.div
-                  key="model-picker"
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="overflow-hidden"
-                >
+            <div
+              className={cn(
+                "grid transition-all duration-300 ease-out",
+                showCanvas
+                  ? "grid-rows-[0fr] opacity-0 invisible"
+                  : "grid-rows-[1fr] opacity-100",
+              )}
+              aria-hidden={showCanvas || undefined}
+            >
+              <div className="overflow-hidden">
+                <PromptInputTextarea
+                  placeholder={
+                    showSearch
+                      ? "Search the web..."
+                      : showThink
+                        ? "Think deeply..."
+                        : placeholder
+                  }
+                  className="text-base"
+                />
+              </div>
+            </div>
+
+            <div
+              className={cn(
+                "grid transition-all duration-300 ease-out",
+                showCanvas
+                  ? "grid-rows-[1fr] opacity-100"
+                  : "grid-rows-[0fr] opacity-0 invisible pointer-events-none",
+              )}
+              aria-hidden={!showCanvas || undefined}
+            >
+              <div className="overflow-hidden">
+                {showCanvas && (
                   <div className="flex min-h-[96px] w-full flex-col gap-2 px-3 py-2.5">
                     <p className="text-xs tracking-widest text-gray-500 uppercase">
                       Select a model
@@ -783,29 +807,9 @@ export const PromptInputBox = React.forwardRef(
                       ))}
                     </div>
                   </div>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="textarea"
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="overflow-hidden"
-                >
-                  <PromptInputTextarea
-                    placeholder={
-                      showSearch
-                        ? "Search the web..."
-                        : showThink
-                          ? "Think deeply..."
-                          : placeholder
-                    }
-                    className="text-base"
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
+                )}
+              </div>
+            </div>
           </div>
 
           {isRecording && (
