@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { PanelRightClose, PanelRightOpen } from "lucide-react";
 import { ModelIcon, PromptInputBox } from "@/components/ui/ai-prompt-box";
 import { SidebarNav } from "@/components/ui/dashboard-sidebar";
@@ -130,7 +131,7 @@ export default function Home() {
           type="button"
           title={sidebarOpen ? "Close sidebar" : "Open sidebar"}
           onClick={() => setSidebarOpen((o) => !o)}
-          className="absolute top-3 right-3 z-20 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-neutral-900/80 text-white/60 backdrop-blur transition-colors hover:bg-white/10 hover:text-white max-md:hidden"
+          className="absolute top-3 right-3 z-30 flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-neutral-900 text-white/70 shadow-lg shadow-black/40 backdrop-blur transition-colors hover:bg-white/10 hover:text-white max-md:hidden"
         >
           {sidebarOpen ? (
             <PanelRightClose className="h-4 w-4" />
@@ -141,10 +142,18 @@ export default function Home() {
         <main
           className={`${
             isEmpty ? "overflow-hidden" : "overflow-y-auto"
-          } flex-1 px-4 py-4`}
+          } flex-1 px-4 ${isEmpty ? "py-4" : "pt-4 pb-2"}`}
         >
-          {isEmpty ? (
-            <div className="flex h-full flex-col justify-center pb-16">
+          <AnimatePresence mode="wait" initial={false}>
+            {isEmpty ? (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0, y: 24, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -24, scale: 0.98 }}
+                transition={{ duration: 0.28, ease: "easeOut" }}
+                className="flex h-full flex-col justify-center pb-16"
+              >
               <div className="mb-8 text-center">
                 <h1 className="text-3xl font-light text-white/85">
                   How can I help today?
@@ -162,9 +171,15 @@ export default function Home() {
                   onModeChange={setMode}
                 />
               </div>
-            </div>
-          ) : (
-            <div className="flex min-h-full flex-col gap-3">
+              </motion.div>
+            ) : (
+              <motion.div
+                key="chat"
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.28, ease: "easeOut" }}
+                className="flex min-h-full flex-col gap-3"
+              >
               <div className="mt-auto" />
             {active?.msgs.map((m, i) =>
               m.role === "user" ? (
@@ -207,12 +222,18 @@ export default function Home() {
               </div>
             )}
             <div ref={bottomRef} />
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </main>
 
         {!isEmpty && (
-        <footer className="px-4 pb-6">
+        <motion.footer
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28, ease: "easeOut" }}
+          className="px-4 pb-4"
+        >
           <div className="w-full">
             <PromptInputBox
               onSend={handleSend}
@@ -222,7 +243,7 @@ export default function Home() {
               onModeChange={setMode}
             />
           </div>
-        </footer>
+        </motion.footer>
         )}
       </div>
 
