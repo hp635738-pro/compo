@@ -48,7 +48,7 @@ export default function Home() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [mode, setMode] = useState<Mode>("text");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const replyIdx = useRef(0);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -62,6 +62,7 @@ export default function Home() {
   const startNewChat = () => {
     setActiveId(null);
     setPending(false);
+    setSidebarOpen(false); // empty-state pe sidebar closed
   };
 
   const handleSend = (
@@ -96,6 +97,7 @@ export default function Home() {
       );
     }
     setPending(true);
+    setSidebarOpen(true); // chat screen pe sidebar open
     window.setTimeout(() => {
       const reply = DUMMY_REPLIES[replyIdx.current % DUMMY_REPLIES.length];
       replyIdx.current += 1;
@@ -142,7 +144,7 @@ export default function Home() {
         <main
           className={`${
             isEmpty ? "overflow-hidden" : "overflow-y-auto"
-          } flex-1 px-4 ${isEmpty ? "py-4" : "pt-4 pb-2"}`}
+          } flex-1 px-4 ${isEmpty ? "py-4" : "pt-4 pb-28"}`}
         >
           <AnimatePresence mode="wait" initial={false}>
             {isEmpty ? (
@@ -232,7 +234,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.28, ease: "easeOut" }}
-          className="px-4 pb-4"
+          className="absolute inset-x-0 bottom-0 z-10 px-4 pb-4"
         >
           <div className="w-full">
             <PromptInputBox
