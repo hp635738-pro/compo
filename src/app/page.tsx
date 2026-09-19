@@ -2,8 +2,21 @@
 
 import { useEffect, useRef, useState } from "react";
 import { PromptInputBox } from "@/components/ui/ai-prompt-box";
+import { ThinkingOrb } from "@/components/ui/thinking-orbs";
 
 type Msg = { role: "user" | "assistant"; text: string };
+type Mode = "text" | "search" | "models";
+
+const ORB_STATE: Record<Mode, "composing" | "searching" | "working"> = {
+  text: "composing",
+  search: "searching",
+  models: "working",
+};
+const ORB_LABEL: Record<Mode, string> = {
+  text: "Thinking…",
+  search: "Searching…",
+  models: "Working…",
+};
 
 const DUMMY_REPLIES = [
   "This is a dummy reply — real model integration coming soon! 🤖",
@@ -16,6 +29,7 @@ const DUMMY_REPLIES = [
 export default function Home() {
   const [thread, setThread] = useState<Msg[]>([]);
   const [pending, setPending] = useState(false);
+  const [mode, setMode] = useState<Mode>("text");
   const replyIdx = useRef(0);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -33,7 +47,7 @@ export default function Home() {
       replyIdx.current += 1;
       setThread((t) => [...t, { role: "assistant", text: reply }]);
       setPending(false);
-    }, 900);
+    }, 1400);
   };
 
   return (
@@ -64,15 +78,17 @@ export default function Home() {
             ),
           )}
           {pending && (
-            <div className="self-start rounded-2xl border border-white/10 bg-neutral-900 px-4 py-3.5">
-              <span className="flex gap-1">
-                {[0, 1, 2].map((d) => (
-                  <span
-                    key={d}
-                    className="h-1.5 w-1.5 animate-pulse rounded-full bg-white/60"
-                    style={{ animationDelay: `${d * 150}ms` }}
-                  />
-                ))}
+            <div
+              className="inline-flex items-center gap-2 self-start rounded-full pl-1 pr-4"
+              style={{
+                background: "rgba(29,29,29,0.42)",
+                boxShadow:
+                  "inset 0 0 0 1px rgba(44,47,54,0.31), inset 0 50px 0 0 rgba(255,255,255,0.012)",
+              }}
+            >
+              <ThinkingOrb state={ORB_STATE[mode]} size={32} theme="dark" />
+              <span className="text-xs whitespace-nowrap text-white/50">
+                {ORB_LABEL[mode]}
               </span>
             </div>
           )}
@@ -82,7 +98,13 @@ export default function Home() {
 
       <footer className="px-4 pb-6">
         <div className="w-full">
-          <PromptInputBox onSend={handleSend} placeholder="Type your message here...." />
+          <PromptInputBox
+            onSend={handleSend}
+            placeholder="Type your message here...."
+            hasConversation={thread.length > 0}
+            onNewChat={() => setThread([])}
+            onModeChange={setMode}
+          />
         </div>
       </footer>
     </div>

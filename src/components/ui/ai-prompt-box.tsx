@@ -457,6 +457,9 @@ interface PromptInputBoxProps {
   isLoading?: boolean;
   placeholder?: string;
   className?: string;
+  hasConversation?: boolean;
+  onNewChat?: () => void;
+  onModeChange?: (mode: "text" | "search" | "models") => void;
 }
 export const PromptInputBox = React.forwardRef(
   (props: PromptInputBoxProps, ref: React.Ref<HTMLDivElement>) => {
@@ -465,6 +468,9 @@ export const PromptInputBox = React.forwardRef(
       isLoading = false,
       placeholder = "Type your message here...",
       className,
+      hasConversation = false,
+      onNewChat,
+      onModeChange,
     } = props;
 
     // Inject styles on client only
@@ -482,22 +488,46 @@ export const PromptInputBox = React.forwardRef(
     const [showThink, setShowThink] = React.useState(false);
     const [showCanvas, setShowCanvas] = React.useState(false);
     const [selectedModel, setSelectedModel] = React.useState<string | null>(
-      null,
+      AI_MODELS[0],
     );
     const uploadInputRef = React.useRef<HTMLInputElement>(null);
     const promptBoxRef = React.useRef<HTMLDivElement>(null);
 
-    const handleToggleChange = (value: string) => {
-      if (value === "search") {
+    const [pendingMode, setPendingMode] = React.useState<
+      "text" | "search" | "models" | null
+    >(null);
+
+    const applyMode = (mode: "text" | "search" | "models") => {
+      if (mode === "search") {
         setShowSearch((prev) => !prev);
         setShowThink(false);
-      } else if (value === "think") {
+      } else if (mode === "text") {
         setShowThink((prev) => !prev);
         setShowSearch(false);
+      } else {
+        setShowCanvas((prev) => !prev);
       }
+      onModeChange?.(mode);
     };
 
-    const handleCanvasToggle = () => setShowCanvas((prev) => !prev);
+    const requestMode = (mode: "text" | "search" | "models") => {
+      if (hasConversation) setPendingMode(mode);
+      else applyMode(mode);
+    };
+
+    const handleToggleChange = (value: string) => {
+      if (value === "search") requestMode("search");
+      else if (value === "think") requestMode("text");
+    };
+
+    const handleCanvasToggle = () => requestMode("models");
+
+    const confirmNewChat = () => {
+      if (!pendingMode) return;
+      onNewChat?.();
+      applyMode(pendingMode);
+      setPendingMode(null);
+    };
 
     const isImageFile = (file: File) => file.type.startsWith("image/");
 
@@ -966,6 +996,36 @@ export const PromptInputBox = React.forwardRef(
           imageUrl={selectedImage}
           onClose={() => setSelectedImage(null)}
         />
+
+        <Dialog
+          open={pendingMode !== null}
+          onOpenChange={(open) => {
+            if (!open) setPendingMode(null);
+          }}
+        >
+          <DialogContent className="max-w-[90vw] md:max-w-[420px]">
+            <DialogTitle>Start a new chat?</DialogTitle>
+            <p className="px-6 text-sm text-gray-400">
+              Mode change karne se current conversation clear ho jayegi.
+            </p>
+            <div className="flex justify-end gap-2 px-6 pb-6">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPendingMode(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                className="bg-[#F97316] text-black hover:bg-[#F97316]/80"
+                onClick={confirmNewChat}
+              >
+                New Chat
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </>
     );
   },
