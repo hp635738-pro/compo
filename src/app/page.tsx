@@ -153,25 +153,14 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -24, scale: 0.98 }}
                 transition={{ duration: 0.28, ease: "easeOut" }}
-                className="flex h-full flex-col justify-center pb-16"
+                className="flex h-full flex-col items-center pt-[22vh] text-center"
               >
-              <div className="mb-8 text-center">
                 <h1 className="text-3xl font-light text-white/85">
                   How can I help today?
                 </h1>
                 <p className="mt-3 text-sm text-white/40">
                   Type a command or ask a question
                 </p>
-              </div>
-              <div className="mx-auto w-full max-w-2xl">
-                <PromptInputBox
-                  onSend={handleSend}
-                  placeholder="Type your message here...."
-                  hasConversation={false}
-                  onNewChat={startNewChat}
-                  onModeChange={setMode}
-                />
-              </div>
               </motion.div>
             ) : (
               <motion.div
@@ -228,14 +217,17 @@ export default function Home() {
           </AnimatePresence>
         </main>
 
-        {!isEmpty && (
         <motion.footer
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.28, ease: "easeOut" }}
           className="absolute inset-x-0 bottom-0 z-10 px-4 pb-3"
         >
-          <div className="w-full">
+          <div
+            className={`mx-auto w-full transition-all duration-300 ${
+              isEmpty ? "max-w-2xl" : "max-w-full"
+            }`}
+          >
             <PromptInputBox
               onSend={handleSend}
               placeholder="Type your message here...."
@@ -245,7 +237,6 @@ export default function Home() {
             />
           </div>
         </motion.footer>
-        )}
       </div>
 
       <div
