@@ -97,7 +97,6 @@ export default function Home() {
       );
     }
     setPending(true);
-    setSidebarOpen(true); // chat screen pe sidebar open
     window.setTimeout(() => {
       const reply = DUMMY_REPLIES[replyIdx.current % DUMMY_REPLIES.length];
       replyIdx.current += 1;
@@ -234,7 +233,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.28, ease: "easeOut" }}
-          className="absolute inset-x-0 bottom-0 z-10 px-4 pb-4"
+          className="absolute inset-x-0 bottom-0 z-10 px-4 pb-3"
         >
           <div className="w-full">
             <PromptInputBox
