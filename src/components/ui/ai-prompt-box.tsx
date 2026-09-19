@@ -5,6 +5,7 @@ import {
   ArrowUp,
   Type,
   Boxes,
+  Code,
   Globe,
   Paperclip,
   Square,
@@ -459,7 +460,7 @@ interface PromptInputBoxProps {
   className?: string;
   hasConversation?: boolean;
   onNewChat?: () => void;
-  onModeChange?: (mode: "text" | "search" | "models") => void;
+  onModeChange?: (mode: "text" | "search" | "models" | "code") => void;
 }
 export const PromptInputBox = React.forwardRef(
   (props: PromptInputBoxProps, ref: React.Ref<HTMLDivElement>) => {
@@ -486,6 +487,7 @@ export const PromptInputBox = React.forwardRef(
     );
     const [showSearch, setShowSearch] = React.useState(false);
     const [showThink, setShowThink] = React.useState(false);
+    const [showCode, setShowCode] = React.useState(false);
     const [showCanvas, setShowCanvas] = React.useState(false);
     const [selectedModel, setSelectedModel] = React.useState<string | null>(
       AI_MODELS[0],
@@ -494,23 +496,29 @@ export const PromptInputBox = React.forwardRef(
     const promptBoxRef = React.useRef<HTMLDivElement>(null);
 
     const [pendingMode, setPendingMode] = React.useState<
-      "text" | "search" | "models" | null
+      "text" | "search" | "models" | "code" | null
     >(null);
 
-    const applyMode = (mode: "text" | "search" | "models") => {
+    const applyMode = (mode: "text" | "search" | "models" | "code") => {
       if (mode === "search") {
         setShowSearch((prev) => !prev);
         setShowThink(false);
+        setShowCode(false);
       } else if (mode === "text") {
         setShowThink((prev) => !prev);
         setShowSearch(false);
+        setShowCode(false);
+      } else if (mode === "code") {
+        setShowCode((prev) => !prev);
+        setShowSearch(false);
+        setShowThink(false);
       } else {
         setShowCanvas((prev) => !prev);
       }
       onModeChange?.(mode);
     };
 
-    const requestMode = (mode: "text" | "search" | "models") => {
+    const requestMode = (mode: "text" | "search" | "models" | "code") => {
       if (hasConversation) setPendingMode(mode);
       else applyMode(mode);
     };
@@ -519,6 +527,8 @@ export const PromptInputBox = React.forwardRef(
       if (value === "search") requestMode("search");
       else if (value === "think") requestMode("text");
     };
+
+    const handleCodeToggle = () => requestMode("code");
 
     const handleCanvasToggle = () => requestMode("models");
 
@@ -605,6 +615,7 @@ export const PromptInputBox = React.forwardRef(
         let messagePrefix = "";
         if (showSearch) messagePrefix = "[Search: ";
         else if (showThink) messagePrefix = "[Text: ";
+        else if (showCode) messagePrefix = "[Code: ";
         else if (selectedModel) messagePrefix = `[${selectedModel}: `;
         const formattedInput = messagePrefix
           ? `${messagePrefix}${input}]`
@@ -702,9 +713,11 @@ export const PromptInputBox = React.forwardRef(
                   placeholder={
                     showSearch
                       ? "Search the web..."
-                      : showThink
-                        ? "Type your text..."
-                        : placeholder
+                        : showThink
+                          ? "Type your text..."
+                          : showCode
+                            ? "Paste code or describe a bug..."
+                            : placeholder
                   }
                   className="text-base"
                 />
@@ -902,6 +915,62 @@ export const PromptInputBox = React.forwardRef(
                         className="flex-shrink-0 overflow-hidden whitespace-nowrap text-[#8B5CF6] text-xs"
                       >
                         Text
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </button>
+
+                <CustomDivider />
+
+                <button
+                  type="button"
+                  onClick={handleCodeToggle}
+                  className={cn(
+                    "flex h-8 items-center gap-1 rounded-full border px-2 py-1 transition-all",
+                    showCode
+                      ? "border-[#34D399] bg-[#34D399]/15 text-[#34D399]"
+                      : "border-transparent bg-transparent text-[#9CA3AF] hover:text-[#D1D5DB]",
+                  )}
+                >
+                  <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center">
+                    <motion.div
+                      animate={{
+                        rotate: showCode ? -8 : 0,
+                        scale: showCode ? 1.15 : 1,
+                      }}
+                      whileHover={{
+                        rotate: -8,
+                        scale: 1.1,
+                        transition: {
+                          type: "spring",
+                          stiffness: 400,
+                          damping: 15,
+                        },
+                      }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 18,
+                      }}
+                    >
+                      <Code
+                        className={cn(
+                          "h-4 w-4",
+                          showCode ? "text-[#34D399]" : "text-inherit",
+                        )}
+                      />
+                    </motion.div>
+                  </div>
+                  <AnimatePresence>
+                    {showCode && (
+                      <motion.span
+                        initial={{ width: 0, opacity: 0 }}
+                        animate={{ width: "auto", opacity: 1 }}
+                        exit={{ width: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="flex-shrink-0 overflow-hidden whitespace-nowrap text-[#34D399] text-xs"
+                      >
+                        Code
                       </motion.span>
                     )}
                   </AnimatePresence>
