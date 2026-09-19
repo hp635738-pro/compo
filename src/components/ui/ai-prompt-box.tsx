@@ -6,10 +6,8 @@ import {
   Type,
   Boxes,
   Globe,
-  Mic,
   Paperclip,
   Square,
-  StopCircle,
   X,
 } from "lucide-react";
 import Image from "next/image";
@@ -183,75 +181,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   },
 );
 Button.displayName = "Button";
-
-// VoiceRecorder Component
-interface VoiceRecorderProps {
-  isRecording: boolean;
-  onStartRecording: () => void;
-  onStopRecording: (duration: number) => void;
-  visualizerBars?: number;
-}
-const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
-  isRecording,
-  onStartRecording,
-  onStopRecording,
-  visualizerBars = 32,
-}) => {
-  const [time, setTime] = React.useState(0);
-  const timerRef = React.useRef<NodeJS.Timeout | null>(null);
-
-  React.useEffect(() => {
-    if (isRecording) {
-      onStartRecording();
-      timerRef.current = setInterval(() => setTime((t) => t + 1), 1000);
-    } else {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-      onStopRecording(time);
-      setTime(0);
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [isRecording, time, onStartRecording, onStopRecording]);
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  return (
-    <div
-      className={cn(
-        "flex w-full flex-col items-center justify-center py-3 transition-all duration-300",
-        isRecording ? "opacity-100" : "h-0 opacity-0",
-      )}
-    >
-      <div className="mb-3 flex items-center gap-2">
-        <div className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
-        <span className="font-mono text-sm text-white/80">
-          {formatTime(time)}
-        </span>
-      </div>
-      <div className="flex h-10 w-full items-center justify-center gap-0.5 px-4">
-        {[...Array(visualizerBars)].map((_, i) => (
-          <div
-            key={i}
-            className="w-0.5 animate-pulse rounded-full bg-white/50"
-            style={{
-              height: `${Math.max(15, Math.random() * 100)}%`,
-              animationDelay: `${i * 0.05}s`,
-              animationDuration: `${0.5 + Math.random() * 0.5}s`,
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
 
 // ImageViewDialog Component
 interface ImageViewDialogProps {
@@ -549,7 +478,6 @@ export const PromptInputBox = React.forwardRef(
     const [selectedImage, setSelectedImage] = React.useState<string | null>(
       null,
     );
-    const [isRecording, setIsRecording] = React.useState(false);
     const [showSearch, setShowSearch] = React.useState(false);
     const [showThink, setShowThink] = React.useState(false);
     const [showCanvas, setShowCanvas] = React.useState(false);
@@ -658,14 +586,6 @@ export const PromptInputBox = React.forwardRef(
       }
     };
 
-    const handleStartRecording = () => console.log("Started recording");
-
-    const handleStopRecording = (duration: number) => {
-      console.log(`Stopped recording after ${duration} seconds`);
-      setIsRecording(false);
-      onSend(`[Voice message - ${duration} seconds]`, []);
-    };
-
     const hasContent = input.trim() !== "" || files.length > 0;
 
     return (
@@ -677,16 +597,15 @@ export const PromptInputBox = React.forwardRef(
           onSubmit={handleSubmit}
           className={cn(
             "w-full border-[#444444] bg-[#1F2023] shadow-[0_8px_30px_rgba(0,0,0,0.24)] transition-all duration-300 ease-in-out",
-            isRecording && "border-red-500/70",
             className,
           )}
-          disabled={isLoading || isRecording}
+          disabled={isLoading}
           ref={ref || promptBoxRef}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
         >
-          {files.length > 0 && !isRecording && (
+          {files.length > 0 && (
             <div className="flex flex-wrap gap-2 p-0 pb-1 transition-all duration-300">
               {files.map((file, index) => (
                 <div key={index} className="group relative">
@@ -736,7 +655,7 @@ export const PromptInputBox = React.forwardRef(
           <div
             className={cn(
               "transition-all duration-300",
-              isRecording ? "h-0 overflow-hidden opacity-0" : "opacity-100",
+              "opacity-100",
             )}
           >
             <div
@@ -818,26 +737,17 @@ export const PromptInputBox = React.forwardRef(
             </div>
           </div>
 
-          {isRecording && (
-            <VoiceRecorder
-              isRecording={isRecording}
-              onStartRecording={handleStartRecording}
-              onStopRecording={handleStopRecording}
-            />
-          )}
-
           <PromptInputActions className="flex items-center justify-between gap-2 p-0 pt-2">
             <div
               className={cn(
                 "flex items-center gap-1 transition-opacity duration-300",
-                isRecording ? "invisible h-0 opacity-0" : "visible opacity-100",
+                "visible opacity-100",
               )}
             >
               <PromptInputAction tooltip="Upload image">
                 <button
                   onClick={() => uploadInputRef.current?.click()}
                   className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[#9CA3AF] transition-colors hover:bg-gray-600/30 hover:text-[#D1D5DB]"
-                  disabled={isRecording}
                 >
                   <Paperclip className="h-5 w-5 transition-colors" />
                   <input
@@ -1026,42 +936,26 @@ export const PromptInputBox = React.forwardRef(
             </div>
 
             <PromptInputAction
-              tooltip={
-                isLoading
-                  ? "Stop generation"
-                  : isRecording
-                    ? "Stop recording"
-                    : hasContent
-                      ? "Send message"
-                      : "Voice message"
-              }
+              tooltip={isLoading ? "Stop generation" : "Send message"}
             >
               <Button
                 variant="default"
                 size="icon"
                 className={cn(
                   "h-8 w-8 rounded-full transition-all duration-200",
-                  isRecording
-                    ? "bg-transparent text-red-500 hover:bg-gray-600/30 hover:text-red-400"
-                    : hasContent
-                      ? "bg-white text-[#1F2023] hover:bg-white/80"
-                      : "bg-transparent text-[#9CA3AF] hover:bg-gray-600/30 hover:text-[#D1D5DB]",
+                  hasContent
+                    ? "bg-white text-[#1F2023] hover:bg-white/80"
+                    : "bg-transparent text-[#9CA3AF] hover:bg-gray-600/30 hover:text-[#D1D5DB]",
                 )}
                 onClick={() => {
-                  if (isRecording) setIsRecording(false);
-                  else if (hasContent) handleSubmit();
-                  else setIsRecording(true);
+                  if (hasContent) handleSubmit();
                 }}
                 disabled={isLoading && !hasContent}
               >
                 {isLoading ? (
                   <Square className="h-4 w-4 animate-pulse fill-[#1F2023]" />
-                ) : isRecording ? (
-                  <StopCircle className="h-5 w-5 text-red-500" />
-                ) : hasContent ? (
-                  <ArrowUp className="h-4 w-4 text-[#1F2023]" />
                 ) : (
-                  <Mic className="h-5 w-5 text-[#1F2023] transition-colors" />
+                  <ArrowUp className="h-4 w-4" />
                 )}
               </Button>
             </PromptInputAction>
