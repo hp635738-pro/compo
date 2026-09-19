@@ -126,13 +126,9 @@ export default function Home() {
       <div className="relative flex min-w-0 flex-1 flex-col">
         <main className="flex-1 overflow-y-auto px-4 py-4">
           <div className="flex min-h-full flex-col gap-3">
-            {active || pending ? (
-              <div className="mt-auto" />
-            ) : (
-              <div className="h-[20vh]" />
-            )}
+            {active || pending ? <div className="mt-auto" /> : null}
             {!active && !pending && (
-              <div className="mb-8 text-center">
+              <div className="flex flex-1 -translate-y-8 flex-col items-center justify-center text-center">
                 <h1 className="text-3xl font-light text-white/85">
                   How can I help today?
                 </h1>
@@ -189,7 +185,7 @@ export default function Home() {
         </footer>
       </div>
 
-      <aside className="relative flex w-72 flex-shrink-0 flex-col border-l border-white/10 bg-neutral-950 max-md:hidden">
+      <aside className="relative flex w-64 flex-shrink-0 flex-col border-l border-white/10 bg-neutral-950 md:w-72">
         <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
           <h2 className="text-sm font-medium text-white/80">History</h2>
           <button
