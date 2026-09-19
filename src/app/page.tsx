@@ -153,13 +153,15 @@ export default function Home() {
                   Type a command or ask a question
                 </p>
               </div>
-              <PromptInputBox
-                onSend={handleSend}
-                placeholder="Type your message here...."
-                hasConversation={false}
-                onNewChat={startNewChat}
-                onModeChange={setMode}
-              />
+              <div className="mx-auto w-full max-w-2xl">
+                <PromptInputBox
+                  onSend={handleSend}
+                  placeholder="Type your message here...."
+                  hasConversation={false}
+                  onNewChat={startNewChat}
+                  onModeChange={setMode}
+                />
+              </div>
             </div>
           ) : (
             <div className="flex min-h-full flex-col gap-3">
