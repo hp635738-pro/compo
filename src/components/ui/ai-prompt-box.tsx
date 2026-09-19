@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowUp,
   BrainCog,
-  FolderCode,
+  Boxes,
   Globe,
   Mic,
   Paperclip,
@@ -891,7 +891,7 @@ export const PromptInputBox = React.forwardRef(
                         damping: 25,
                       }}
                     >
-                      <FolderCode
+                      <Boxes
                         className={cn(
                           "h-4 w-4",
                           showCanvas ? "text-[#F97316]" : "text-inherit",
