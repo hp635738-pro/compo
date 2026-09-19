@@ -508,16 +508,18 @@ export const PromptInputBox = React.forwardRef(
     >(null);
 
     const applyMode = (mode: "text" | "search" | "models" | "code") => {
+      // Search/Text/Code behave like a radio group: exactly one stays
+      // selected at all times (Text is the default). Models toggles on its own.
       if (mode === "search") {
-        setShowSearch((prev) => !prev);
+        setShowSearch(true);
         setShowThink(false);
         setShowCode(false);
       } else if (mode === "text") {
-        setShowThink((prev) => !prev);
+        setShowThink(true);
         setShowSearch(false);
         setShowCode(false);
       } else if (mode === "code") {
-        setShowCode((prev) => !prev);
+        setShowCode(true);
         setShowSearch(false);
         setShowThink(false);
       } else {
