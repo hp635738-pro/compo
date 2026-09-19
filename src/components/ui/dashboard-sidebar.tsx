@@ -11,11 +11,6 @@ import {
   ChevronRight,
   Inbox,
   Calendar,
-  Activity,
-  CreditCard,
-  Globe,
-  Terminal,
-  Blocks,
   PanelLeftClose,
   PanelLeftOpen,
   Command,
@@ -42,7 +37,6 @@ const mockNavGroups: NavGroupData[] = [
       { id: 'search', title: 'Search', icon: Search, shortcut: '⌘K' },
       { id: 'home', title: 'Home', icon: LayoutDashboard },
       { id: 'inbox', title: 'Inbox', icon: Inbox, badge: 12 },
-      { id: 'analytics', title: 'Analytics', icon: Activity },
     ]
   },
   {
@@ -68,23 +62,6 @@ const mockNavGroups: NavGroupData[] = [
           { id: 't-product', title: 'Product', icon: Hash },
         ]
       },
-      { 
-        id: 'customers', 
-        title: 'Customers', 
-        icon: Globe,
-        children: [
-          { id: 'c-enterprise', title: 'Enterprise', icon: Hash },
-          { id: 'c-smb', title: 'SMB', icon: Hash },
-        ]
-      },
-      { id: 'finance', title: 'Finance', icon: CreditCard },
-    ]
-  },
-  {
-    heading: 'Developers',
-    items: [
-      { id: 'api', title: 'API Keys', icon: Terminal },
-      { id: 'webhooks', title: 'Webhooks', icon: Blocks },
     ]
   }
 ];
