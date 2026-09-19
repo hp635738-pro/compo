@@ -8,20 +8,19 @@ import React from "react";
 import { renderToString } from "react-dom/server";
 import { JSDOM } from "jsdom";
 
+type GlobalBag = Record<string, unknown>;
+
 async function main() {
   // Set up browser-like globals BEFORE importing client react / the component
   const dom = new JSDOM(
     "<!doctype html><html><body><div id=\"r\"></div></body></html>",
     { pretendToBeVisual: true, url: "http://localhost/" },
   );
-  (globalThis as any).window = dom.window;
-  (globalThis as any).document = dom.window.document;
-  Object.defineProperty(globalThis, "navigator", {
-    value: dom.window.navigator,
-    configurable: true,
-  });
-  if (!dom.window.matchMedia) {
-    (dom.window as any).matchMedia = () => ({
+  const win = dom.window as unknown as GlobalBag & {
+    matchMedia?: () => unknown;
+  };
+  if (!win.matchMedia) {
+    win.matchMedia = () => ({
       matches: false,
       addListener: () => {},
       removeListener: () => {},
@@ -29,7 +28,14 @@ async function main() {
       removeEventListener: () => {},
     });
   }
-  (globalThis as any).matchMedia = (dom.window as any).matchMedia;
+  const globals = globalThis as GlobalBag;
+  globals.window = dom.window;
+  globals.document = dom.window.document;
+  globals.matchMedia = win.matchMedia;
+  Object.defineProperty(globalThis, "navigator", {
+    value: dom.window.navigator,
+    configurable: true,
+  });
 
   const errors: string[] = [];
   const origError = console.error;
@@ -43,15 +49,15 @@ async function main() {
 
   // Server render
   const html = renderToString(app);
-  document.getElementById("r")!.innerHTML = html;
+  (dom.window.document.getElementById("r") as HTMLElement).innerHTML = html;
 
   // Client hydrate
   const { hydrateRoot } = await import("react-dom/client");
-  hydrateRoot(document.getElementById("r")!, app);
+  hydrateRoot(dom.window.document.getElementById("r") as HTMLElement, app);
   await new Promise((resolve) => setTimeout(resolve, 800));
 
-  const hydrationIssues = errors.filter(
-    (e) => /hydrat|did not match|server|Text|reconcil/i.test(e),
+  const hydrationIssues = errors.filter((e) =>
+    /hydrat|did not match|server|Text|reconcil/i.test(e),
   );
   console.log(
     hydrationIssues.length
