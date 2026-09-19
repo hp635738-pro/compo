@@ -8,31 +8,36 @@ export default function Home() {
   const [lastFiles, setLastFiles] = useState<File[]>([]);
 
   return (
-    <div className="flex w-full h-screen flex-col justify-center items-center">
-      <div className="p-4 w-[500px] max-w-[92vw]">
-        <PromptInputBox
-          onSend={(message, files) => {
-            setLastMessage(message);
-            setLastFiles(files ?? []);
-          }}
-          placeholder="Type your message here...."
-        />
-      </div>
-      {lastMessage !== null && (
-        <div className="mt-6 max-w-[500px] w-[92vw] rounded-2xl bg-black/40 backdrop-blur px-5 py-4 text-sm text-white/90">
-          <p className="mb-1 text-xs uppercase tracking-widest text-white/60">
-            Sent{lastFiles.length > 0 ? ` · ${lastFiles.length} file(s)` : ""}
-          </p>
-          <p className="whitespace-pre-wrap break-words">
-            {lastMessage || "(empty message)"}
-          </p>
-          {lastFiles.length > 0 && (
-            <p className="mt-2 text-white/70">
-              {lastFiles.map((f) => f.name).join(", ")}
+    <div className="flex h-screen w-full flex-col">
+      <main className="flex flex-1 flex-col items-center justify-end overflow-y-auto px-4 pb-4">
+        {lastMessage !== null && (
+          <div className="w-[500px] max-w-full rounded-2xl bg-black/40 px-5 py-4 text-sm text-white/90 backdrop-blur">
+            <p className="mb-1 text-xs tracking-widest text-white/60 uppercase">
+              Sent{lastFiles.length > 0 ? ` · ${lastFiles.length} file(s)` : ""}
             </p>
-          )}
+            <p className="break-words whitespace-pre-wrap">
+              {lastMessage || "(empty message)"}
+            </p>
+            {lastFiles.length > 0 && (
+              <p className="mt-2 text-white/70">
+                {lastFiles.map((f) => f.name).join(", ")}
+              </p>
+            )}
+          </div>
+        )}
+      </main>
+
+      <footer className="flex justify-center px-4 pb-6">
+        <div className="w-[500px] max-w-full">
+          <PromptInputBox
+            onSend={(message, files) => {
+              setLastMessage(message);
+              setLastFiles(files ?? []);
+            }}
+            placeholder="Type your message here...."
+          />
         </div>
-      )}
+      </footer>
     </div>
   );
 }
