@@ -481,6 +481,16 @@ const CustomDivider: React.FC = () => (
   </div>
 );
 
+// Dummy AI models shown in the Models picker (placeholder list for now)
+const AI_MODELS = [
+  "GPT-5",
+  "Claude Sonnet 4.5",
+  "Gemini 2.5 Pro",
+  "Llama 4 Maverick",
+  "Grok 4",
+  "DeepSeek V3.2",
+];
+
 // Main PromptInputBox Component
 interface PromptInputBoxProps {
   onSend?: (message: string, files?: File[]) => void;
@@ -512,6 +522,9 @@ export const PromptInputBox = React.forwardRef(
     const [showSearch, setShowSearch] = React.useState(false);
     const [showThink, setShowThink] = React.useState(false);
     const [showCanvas, setShowCanvas] = React.useState(false);
+    const [selectedModel, setSelectedModel] = React.useState<string | null>(
+      null,
+    );
     const uploadInputRef = React.useRef<HTMLInputElement>(null);
     const promptBoxRef = React.useRef<HTMLDivElement>(null);
 
@@ -603,7 +616,7 @@ export const PromptInputBox = React.forwardRef(
         let messagePrefix = "";
         if (showSearch) messagePrefix = "[Search: ";
         else if (showThink) messagePrefix = "[Think: ";
-        else if (showCanvas) messagePrefix = "[Models: ";
+        else if (selectedModel) messagePrefix = `[${selectedModel}: `;
         const formattedInput = messagePrefix
           ? `${messagePrefix}${input}]`
           : input;
@@ -695,18 +708,44 @@ export const PromptInputBox = React.forwardRef(
               isRecording ? "h-0 overflow-hidden opacity-0" : "opacity-100",
             )}
           >
-            <PromptInputTextarea
-              placeholder={
-                showSearch
-                  ? "Search the web..."
-                  : showThink
-                    ? "Think deeply..."
-                    : showCanvas
-                      ? "Create on models..."
+            {showCanvas ? (
+              <div className="flex min-h-[96px] w-full flex-col gap-2 px-3 py-2.5">
+                <p className="text-xs tracking-widest text-gray-500 uppercase">
+                  Select a model
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {AI_MODELS.map((model) => (
+                    <button
+                      key={model}
+                      type="button"
+                      onClick={() => {
+                        setSelectedModel(model);
+                        setShowCanvas(false);
+                      }}
+                      className={cn(
+                        "rounded-full border px-3 py-1.5 text-sm transition-all",
+                        selectedModel === model
+                          ? "border-[#F97316] bg-[#F97316]/15 text-[#F97316]"
+                          : "border-[#3A3A40] text-gray-300 hover:border-[#F97316]/60 hover:text-white",
+                      )}
+                    >
+                      {model}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <PromptInputTextarea
+                placeholder={
+                  showSearch
+                    ? "Search the web..."
+                    : showThink
+                      ? "Think deeply..."
                       : placeholder
-              }
-              className="text-base"
-            />
+                }
+                className="text-base"
+              />
+            )}
           </div>
 
           {isRecording && (
@@ -900,7 +939,7 @@ export const PromptInputBox = React.forwardRef(
                     </motion.div>
                   </div>
                   <AnimatePresence>
-                    {showCanvas && (
+                    {(showCanvas || selectedModel) && (
                       <motion.span
                         initial={{ width: 0, opacity: 0 }}
                         animate={{ width: "auto", opacity: 1 }}
@@ -908,7 +947,7 @@ export const PromptInputBox = React.forwardRef(
                         transition={{ duration: 0.2 }}
                         className="flex-shrink-0 overflow-hidden whitespace-nowrap text-[#F97316] text-xs"
                       >
-                        Models
+                        {showCanvas ? "Models" : selectedModel}
                       </motion.span>
                     )}
                   </AnimatePresence>
