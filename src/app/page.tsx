@@ -2,10 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { MessageSquare, Plus, Trash2 } from "lucide-react";
-import { PromptInputBox } from "@/components/ui/ai-prompt-box";
+import { ModelIcon, PromptInputBox } from "@/components/ui/ai-prompt-box";
 import { ThinkingOrb } from "@/components/ui/thinking-orbs";
 
-type Msg = { role: "user" | "assistant"; text: string };
+type Msg = { role: "user" | "assistant"; text: string; model?: string };
 type Mode = "text" | "search" | "models" | "code";
 type Convo = {
   id: string;
@@ -75,6 +75,7 @@ export default function Home() {
   ) => {
     const fileNote =
       files && files.length > 0 ? `  ·  📎 ${files.length} file(s)` : "";
+    const modelUsed = meta?.model ?? "Max";
     const userMsg: Msg = { role: "user", text: message + fileNote };
     let id = activeId;
     if (!id || !convos.some((c) => c.id === id)) {
@@ -85,7 +86,7 @@ export default function Home() {
         title: message.slice(0, 42) || "New chat",
         msgs: [userMsg],
         createdAt: Date.now(),
-        model: meta?.model,
+        model: modelUsed,
       };
       setConvos((cs) => [convo, ...cs]);
       setActiveId(id);
@@ -93,7 +94,7 @@ export default function Home() {
       setConvos((cs) =>
         cs.map((c) =>
           c.id === id
-            ? { ...c, model: meta?.model ?? c.model, msgs: [...c.msgs, userMsg] }
+            ? { ...c, model: modelUsed, msgs: [...c.msgs, userMsg] }
             : c,
         ),
       );
@@ -105,7 +106,13 @@ export default function Home() {
       setConvos((cs) =>
         cs.map((c) =>
           c.id === id
-            ? { ...c, msgs: [...c.msgs, { role: "assistant", text: reply }] }
+            ? {
+                ...c,
+                msgs: [
+                  ...c.msgs,
+                  { role: "assistant", text: reply, model: modelUsed },
+                ],
+              }
             : c,
         ),
       );
@@ -123,12 +130,24 @@ export default function Home() {
         <div className="absolute -right-24 -bottom-24 h-72 w-72 rounded-full bg-[#1EAEDB]/10 blur-3xl" />
       </div>
 
-      <div className="relative flex min-w-0 flex-1 flex-col">
-        <main className="flex-1 overflow-y-auto px-4 py-4">
-          <div className="flex min-h-full flex-col gap-3">
+      <div
+        className={`relative flex min-w-0 flex-1 flex-col ${
+          active || pending ? "" : "justify-center pb-16"
+        }`}
+      >
+        <main
+          className={`${
+            active || pending ? "flex-1 overflow-y-auto" : ""
+          } px-4 py-4`}
+        >
+          <div
+            className={`flex flex-col gap-3 ${
+              active || pending ? "min-h-full" : ""
+            }`}
+          >
             {active || pending ? <div className="mt-auto" /> : null}
             {!active && !pending && (
-              <div className="flex flex-1 -translate-y-8 flex-col items-center justify-center text-center">
+              <div className="mb-8 text-center">
                 <h1 className="text-3xl font-light text-white/85">
                   How can I help today?
                 </h1>
@@ -150,6 +169,15 @@ export default function Home() {
                   key={i}
                   className="max-w-[80%] self-start rounded-2xl border border-white/10 bg-neutral-900/80 px-4 py-3 text-sm break-words whitespace-pre-wrap text-white/90 backdrop-blur"
                 >
+                  {m.model && (
+                    <div className="mb-1.5 flex items-center gap-1.5 text-[10px] tracking-wide text-white/45">
+                      <ModelIcon
+                        name={m.model}
+                        className="h-3.5 w-3.5 text-[#F97316]"
+                      />
+                      <span>{m.model}</span>
+                    </div>
+                  )}
                   {m.text}
                 </div>
               ),

@@ -454,6 +454,7 @@ const ModelLogo: React.FC<{ name: string; className?: string }> = ({
     <path d={MODEL_LOGOS[name]} />
   </svg>
 );
+export { ModelLogo as ModelIcon };
 
 // Main PromptInputBox Component
 interface PromptInputBoxProps {
