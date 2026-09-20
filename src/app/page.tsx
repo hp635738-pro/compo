@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ModelIcon, PromptInputBox } from "@/components/ui/ai-prompt-box";
+import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 import { ThinkingOrb } from "@/components/ui/thinking-orbs";
 
 type Msg = { role: "user" | "assistant"; text: string; model?: string };
@@ -32,11 +33,9 @@ const ORB_LABEL: Record<Mode, string> = {
 };
 
 const DUMMY_REPLIES = [
-  "This is a dummy reply — real model integration coming soon! 🤖",
-  "Got it! (dummy response) Main abhi demo mode mein hoon.",
-  "Interesting! Though I'm just a dummy reply for now.",
-  "Demo reply: aapka message mil gaya. Backend jald connect hoga!",
-  "Hmm, let me think… just kidding — dummy mode ON 🙂",
+  "Here's a **structured demo response** rendered with the new Markdown engine ✨\n\n## What you get\n- **Headings**, *italics* and `inline code`\n- GitHub-style tables, lists and quotes\n- Syntax-highlighted code blocks with a copy button\n\n> Rich responses, just like ChatGPT / Claude — right in your chat UI.",
+  "Sure! Here's a quick example in TypeScript:\n\n```typescript\ntype Model = { id: string; name: string; tier: 1 | 2 | 3 };\n\nexport function pickModel(models: Model[], tier: 1 | 2 | 3): Model | undefined {\n  return models.find((m) => m.tier === tier);\n}\n```\n\nCall it with `pickModel(MODELS, 1)` to get the best agent. Want it in Python instead?",
+  "## Model comparison\n\n| Model | Strength | Speed |\n| --- | --- | --- |\n| claude-3-5-sonnet | Tool use & coding | Fast |\n| o3-mini | Reasoning loops | Faster |\n| gemini-2.0-flash | Latency | Fastest |\n\n---\n\n**Next steps:**\n1. Pick a model from the *Models* picker\n2. Toggle **Code** or **Search** for specialised lists\n3. Watch replies render with full Markdown 🎉",
 ];
 
 let seq = 0;
@@ -200,7 +199,7 @@ export default function Home() {
                       <span>{m.model}</span>
                     </div>
                   )}
-                  {m.text}
+                  <MarkdownRenderer content={m.text} />
                 </div>
               ),
             )}
