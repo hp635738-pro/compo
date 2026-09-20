@@ -446,6 +446,20 @@ const CODE_MODEL_TIERS: { tier: string; models: string[] }[] = [
   { tier: "Other code models", models: ["wizardcoder-33b-v1.1","phind-codellama-34b-v2","phi-4","phi-3.5-mini-instruct"] },
 ];
 
+// Search-specialist models shown when Search mode is active
+const SEARCH_MODEL_TIERS: { tier: string; models: string[] }[] = [
+  { tier: "Perplexity AI (search engines)", models: ["sonar-pro","sonar-reasoning","sonar","perplexity-online"] },
+  { tier: "OpenAI (web search)", models: ["gpt-4o (with search)","gpt-4o-mini (with search)","searchgpt-prototype","o3-mini (with search)"] },
+  { tier: "Google (search grounding)", models: ["gemini-2.0-flash (with search)","gemini-1.5-pro (with search)","gemini-1.5-flash (with search)","gemini-2.0-flash-thinking-exp (search)"] },
+  { tier: "Anthropic (web search)", models: ["claude-3-5-sonnet (web-search)","claude-3-5-haiku (web-search)","claude-3-opus (web-search)"] },
+  { tier: "DeepSeek (live search)", models: ["deepseek-r1 (with web-search)","deepseek-v3 (with web-search)"] },
+  { tier: "xAI (X & live web search)", models: ["grok-2 (with web-search)","grok-2-mini (with web-search)"] },
+  { tier: "Cohere (search & RAG)", models: ["command-r-plus (grounded search)","command-r (grounded search)"] },
+  { tier: "Mistral AI", models: ["mistral-large (web-search)","le-chat (web-search)"] },
+  { tier: "You.com", models: ["youchat","you-search-pro"] },
+  { tier: "Meta / open source (web-RAG)", models: ["llama-3.3-70b-instruct (with search)","llama-3.1-405b-instruct (with search)","llama-3.1-70b-instruct (with search)","qwen2.5-72b-instruct (with search)"] },
+];
+
 // Brand logo path data (24x24 viewBox, via simple-icons) for the dummy model list
 const MODEL_LOGOS: Record<string, string> = {
   "Max":
@@ -476,6 +490,10 @@ const MODEL_LOGOS: Record<string, string> = {
     "M3 16.5c6 3.5 12 3.5 18 0L22.5 19c-6.5 4-14.5 4-21 0z",
   "BigCode":
     "M12 3a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM5 15a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM19 15a3 3 0 1 1 0 6 3 3 0 0 1 0-6z",
+  "Perplexity":
+    "M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z",
+  "You.com":
+    "M4 5h4v7a4 4 0 0 0 8 0V5h4v7a8 8 0 0 1-16 0z",
 };
 
 // Resolve a brand logo for model ids (prefix-based)
@@ -496,6 +514,10 @@ const logoFor = (name: string): string | undefined => {
   if (name.startsWith("codellama") || name.startsWith("wizardcoder")) return MODEL_LOGOS["Llama 4 Maverick"];
   if (name.startsWith("codegemma")) return MODEL_LOGOS["Gemini 2.5 Pro"];
   if (name.startsWith("starcoder")) return MODEL_LOGOS["BigCode"];
+  if (name.startsWith("sonar") || name.startsWith("perplexity")) return MODEL_LOGOS["Perplexity"];
+  if (name.startsWith("youchat") || name.startsWith("you-search")) return MODEL_LOGOS["You.com"];
+  if (name.startsWith("le-chat")) return MODEL_LOGOS["Mistral"];
+  if (name.startsWith("searchgpt")) return MODEL_LOGOS["GPT-5"];
   if (name.startsWith("yi")) return MODEL_LOGOS["Yi"];
   return MODEL_LOGOS["Max"];
 };
@@ -809,7 +831,7 @@ export const PromptInputBox = React.forwardRef(
                       Select a model
                     </p>
                     <div className="flex max-h-[46vh] flex-col gap-3 overflow-y-auto pr-1">
-                      {(showCode ? CODE_MODEL_TIERS : MODEL_TIERS).map((t) => (
+                      {(showCode ? CODE_MODEL_TIERS : showSearch ? SEARCH_MODEL_TIERS : MODEL_TIERS).map((t) => (
                         <div key={t.tier}>
                           <p className="mb-1.5 text-[10px] tracking-widest text-gray-500 uppercase">
                             {t.tier}
