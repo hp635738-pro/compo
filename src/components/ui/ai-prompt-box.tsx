@@ -411,45 +411,25 @@ const CustomDivider: React.FC = () => (
   </div>
 );
 
-// Tiered agent models (as requested) shown grouped in the Models picker
+// Provider-grouped agent models (as requested) shown in the Models picker
 const MODEL_TIERS: { tier: string; models: string[] }[] = [
-  {
-    tier: "Tier 1 · Overall best agents",
-    models: [
-      "claude-3-5-sonnet-20241022",
-      "o3-mini",
-      "o1",
-      "gpt-4o",
-    ],
-  },
-  {
-    tier: "Tier 2 · Cost-effective & open weights",
-    models: [
-      "deepseek-r1",
-      "deepseek-v3",
-      "qwen2.5-72b-instruct",
-      "qwen2.5-coder-32b-instruct",
-    ],
-  },
-  {
-    tier: "Tier 3 · Fast execution & huge context",
-    models: [
-      "gemini-2.0-flash-exp",
-      "gemini-2.0-flash-thinking-exp",
-      "gemini-1.5-pro",
-    ],
-  },
-  {
-    tier: "Tier 4 · Local & enterprise agents",
-    models: [
-      "llama-3.3-70b-instruct",
-      "mistral-large-2411",
-      "command-r-plus",
-    ],
-  },
+  { tier: "OpenAI", models: ["o3-mini","o1","o1-preview","o1-mini","gpt-4o","gpt-4o-latest","gpt-4o-mini","gpt-4-turbo","gpt-4-0125-preview","gpt-4-1106-preview","gpt-4-0613","gpt-3.5-turbo-0125","gpt-3.5-turbo-1106"] },
+  { tier: "Anthropic (Claude)", models: ["claude-3-5-sonnet-20241022","claude-3-5-sonnet","claude-3-5-haiku","claude-3-opus","claude-3-sonnet","claude-3-haiku","claude-2.1","claude-2.0","claude-instant-1.2"] },
+  { tier: "Google", models: ["gemini-2.0-flash-exp","gemini-2.0-flash-thinking-exp","gemini-2.0-pro-exp","gemini-1.5-pro","gemini-1.5-flash","gemini-1.5-flash-8b","gemini-1.0-pro","gemma-2-27b-it","gemma-2-9b-it","gemma-2-2b-it"] },
+  { tier: "DeepSeek", models: ["deepseek-r1","deepseek-v3","deepseek-coder-v2","deepseek-llm-67b-chat"] },
+  { tier: "Meta (Llama)", models: ["llama-3.3-70b-instruct","llama-3.1-405b-instruct","llama-3.1-70b-instruct","llama-3.1-8b-instruct","llama-3-70b-instruct","llama-3-8b-instruct","llama-2-70b-chat","llama-2-13b-chat"] },
+  { tier: "Alibaba (Qwen)", models: ["qwen2.5-max","qwen2.5-plus","qwen2.5-72b-instruct","qwen2.5-32b-instruct","qwen2.5-14b-instruct","qwen2.5-7b-instruct","qwq-32b-preview","qwen2-72b-instruct","qwen1.5-110b-chat"] },
+  { tier: "Mistral AI", models: ["mistral-large-2411","mistral-large-2407","mistral-medium","mistral-small","mistral-7b-instruct","mixtral-8x22b-instruct","mixtral-8x7b-instruct","codestral-22b","pixtral-12b"] },
+  { tier: "xAI", models: ["grok-2","grok-2-mini","grok-beta"] },
+  { tier: "Cohere", models: ["command-r-plus-08-2024","command-r-plus","command-r"] },
+  { tier: "Microsoft", models: ["phi-4","phi-3.5-mini-instruct","phi-3-medium-4k-instruct","phi-3-mini-4k-instruct","wizardlm-2-8x22b","wizardlm-2-7b"] },
+  { tier: "NVIDIA", models: ["llama-3.1-nemotron-70b-instruct","nemotron-4-340b-instruct"] },
+  { tier: "01.AI (Yi)", models: ["yi-lightning","yi-large","yi-1.5-34b-chat","yi-34b-chat"] },
+  { tier: "Amazon", models: ["amazon-nova-pro","amazon-nova-lite","amazon-nova-micro"] },
+  { tier: "Other open-source", models: ["dbrx-instruct","starling-lm-7b-beta","zephyr-7b-beta","vicuna-33b","vicuna-13b","glm-4-9b-chat","solar-10.7b-instruct","openchat-3.5"] },
 ];
 
-// Max (default) + all tier models, flat list
+// Max (default) + all provider models, flat list
 const AI_MODELS = ["Max", ...MODEL_TIERS.flatMap((t) => t.models)];
 
 // Brand logo path data (24x24 viewBox, via simple-icons) for the dummy model list
@@ -474,19 +454,29 @@ const MODEL_LOGOS: Record<string, string> = {
     "M2 3h20v4H2zM2 10h14v4H2zM2 17h20v4H2z",
   "Cohere":
     "M12 2l4 5-4 5-4-5zM5 12l4 5-4 5-4-5zM19 12l4 5-4 5-4-5z",
+  "Microsoft":
+    "M3 3h8.5v8.5H3zM13.5 3H22v8.5h-8.5zM3 13.5h8.5V22H3zM13.5 13.5H22V22h-8.5z",
+  "Yi":
+    "M12 2l3 7h7l-5.5 4.5 2 7.5-6.5-4.5L5.5 21l2-7.5L2 9h7z",
+  "Amazon":
+    "M3 16.5c6 3.5 12 3.5 18 0L22.5 19c-6.5 4-14.5 4-21 0z",
 };
 
-// Resolve a brand logo for tier model ids (prefix-based)
+// Resolve a brand logo for model ids (prefix-based)
 const logoFor = (name: string): string | undefined => {
   if (MODEL_LOGOS[name]) return MODEL_LOGOS[name];
   if (name.startsWith("claude")) return MODEL_LOGOS["Claude Sonnet 4.5"];
   if (/^(o1|o3|gpt)/.test(name)) return MODEL_LOGOS["GPT-5"];
   if (name.startsWith("deepseek")) return MODEL_LOGOS["DeepSeek V3.2"];
-  if (name.startsWith("qwen")) return MODEL_LOGOS["Qwen"];
-  if (name.startsWith("gemini")) return MODEL_LOGOS["Gemini 2.5 Pro"];
-  if (name.startsWith("llama")) return MODEL_LOGOS["Llama 4 Maverick"];
-  if (name.startsWith("mistral")) return MODEL_LOGOS["Mistral"];
+  if (name.startsWith("qwen") || name.startsWith("qwq")) return MODEL_LOGOS["Qwen"];
+  if (name.startsWith("gemini") || name.startsWith("gemma")) return MODEL_LOGOS["Gemini 2.5 Pro"];
+  if (name.startsWith("llama") || name.startsWith("nemotron")) return MODEL_LOGOS["Llama 4 Maverick"];
+  if (/^(mistral|mixtral|codestral|pixtral)/.test(name)) return MODEL_LOGOS["Mistral"];
+  if (name.startsWith("grok")) return MODEL_LOGOS["Grok 4"];
   if (name.startsWith("command")) return MODEL_LOGOS["Cohere"];
+  if (name.startsWith("phi") || name.startsWith("wizardlm")) return MODEL_LOGOS["Microsoft"];
+  if (name.startsWith("yi")) return MODEL_LOGOS["Yi"];
+  if (name.startsWith("amazon")) return MODEL_LOGOS["Amazon"];
   return MODEL_LOGOS["Max"];
 };
 
