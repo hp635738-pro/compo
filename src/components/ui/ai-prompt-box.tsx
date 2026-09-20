@@ -413,6 +413,7 @@ const CustomDivider: React.FC = () => (
 
 // Provider-grouped agent models (as requested) shown in the Models picker
 const MODEL_TIERS: { tier: string; models: string[] }[] = [
+  { tier: "Featured", models: ["Max"] },
   { tier: "OpenAI", models: ["o3-mini","o1","o1-preview","o1-mini","gpt-4o","gpt-4o-latest","gpt-4o-mini","gpt-4-turbo","gpt-4-0125-preview","gpt-4-1106-preview","gpt-4-0613","gpt-3.5-turbo-0125","gpt-3.5-turbo-1106"] },
   { tier: "Anthropic (Claude)", models: ["claude-3-5-sonnet-20241022","claude-3-5-sonnet","claude-3-5-haiku","claude-3-opus","claude-3-sonnet","claude-3-haiku","claude-2.1","claude-2.0","claude-instant-1.2"] },
   { tier: "Google", models: ["gemini-2.0-flash-exp","gemini-2.0-flash-thinking-exp","gemini-2.0-pro-exp","gemini-1.5-pro","gemini-1.5-flash","gemini-1.5-flash-8b","gemini-1.0-pro","gemma-2-27b-it","gemma-2-9b-it","gemma-2-2b-it"] },
@@ -434,6 +435,7 @@ const AI_MODELS = ["Max", ...MODEL_TIERS.flatMap((t) => t.models)];
 
 // Coding-specialist models shown when Code mode is active
 const CODE_MODEL_TIERS: { tier: string; models: string[] }[] = [
+  { tier: "Featured", models: ["Max"] },
   { tier: "OpenAI (top coding & reasoning)", models: ["o3-mini","o1","o1-preview","o1-mini","gpt-4o","gpt-4o-latest","gpt-4o-mini","gpt-4-turbo","gpt-4-0125-preview"] },
   { tier: "Anthropic (Claude)", models: ["claude-3-5-sonnet-20241022","claude-3-5-sonnet","claude-3-5-haiku","claude-3-opus","claude-3-sonnet"] },
   { tier: "DeepSeek (coding & reasoning)", models: ["deepseek-r1","deepseek-v3","deepseek-coder-v2-instruct","deepseek-coder-33b-instruct","deepseek-coder-6.7b-instruct"] },
@@ -448,6 +450,7 @@ const CODE_MODEL_TIERS: { tier: string; models: string[] }[] = [
 
 // Search-specialist models shown when Search mode is active
 const SEARCH_MODEL_TIERS: { tier: string; models: string[] }[] = [
+  { tier: "Featured", models: ["Max"] },
   { tier: "Perplexity AI (search engines)", models: ["sonar-pro","sonar-reasoning","sonar","perplexity-online"] },
   { tier: "OpenAI (web search)", models: ["gpt-4o (with search)","gpt-4o-mini (with search)","searchgpt-prototype","o3-mini (with search)"] },
   { tier: "Google (search grounding)", models: ["gemini-2.0-flash (with search)","gemini-1.5-pro (with search)","gemini-1.5-flash (with search)","gemini-2.0-flash-thinking-exp (search)"] },
