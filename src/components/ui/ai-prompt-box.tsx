@@ -704,15 +704,7 @@ export const PromptInputBox = React.forwardRef(
 
     const handleSubmit = () => {
       if (input.trim() || files.length > 0) {
-        let messagePrefix = "";
-        if (showSearch) messagePrefix = "[Search: ";
-        else if (showThink) messagePrefix = "[Text: ";
-        else if (showCode) messagePrefix = "[Code: ";
-        else if (selectedModel) messagePrefix = `[${selectedModel}: `;
-        const formattedInput = messagePrefix
-          ? `${messagePrefix}${input}]`
-          : input;
-        onSend(formattedInput, files, { model: selectedModel ?? undefined });
+        onSend(input, files, { model: selectedModel ?? undefined });
         setInput("");
         setFiles([]);
         setFilePreviews({});
