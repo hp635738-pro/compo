@@ -432,6 +432,20 @@ const MODEL_TIERS: { tier: string; models: string[] }[] = [
 // Max (default) + all provider models, flat list
 const AI_MODELS = ["Max", ...MODEL_TIERS.flatMap((t) => t.models)];
 
+// Coding-specialist models shown when Code mode is active
+const CODE_MODEL_TIERS: { tier: string; models: string[] }[] = [
+  { tier: "OpenAI (top coding & reasoning)", models: ["o3-mini","o1","o1-preview","o1-mini","gpt-4o","gpt-4o-latest","gpt-4o-mini","gpt-4-turbo","gpt-4-0125-preview"] },
+  { tier: "Anthropic (Claude)", models: ["claude-3-5-sonnet-20241022","claude-3-5-sonnet","claude-3-5-haiku","claude-3-opus","claude-3-sonnet"] },
+  { tier: "DeepSeek (coding & reasoning)", models: ["deepseek-r1","deepseek-v3","deepseek-coder-v2-instruct","deepseek-coder-33b-instruct","deepseek-coder-6.7b-instruct"] },
+  { tier: "Alibaba (Qwen Coder)", models: ["qwen2.5-coder-32b-instruct","qwen2.5-coder-14b-instruct","qwen2.5-coder-7b-instruct","qwq-32b-preview","qwen2.5-72b-instruct","qwen2.5-max"] },
+  { tier: "Mistral AI (Codestral)", models: ["codestral-2501","codestral-22b","mistral-large-2411","mixtral-8x22b-instruct"] },
+  { tier: "Google", models: ["gemini-2.0-flash-thinking-exp","gemini-2.0-flash-exp","gemini-2.0-pro-exp","gemini-1.5-pro","gemini-1.5-flash","codegemma-7b-it"] },
+  { tier: "Meta (Code Llama & Llama 3)", models: ["llama-3.3-70b-instruct","llama-3.1-405b-instruct","llama-3.1-70b-instruct","codellama-70b-instruct","codellama-34b-instruct","codellama-13b-instruct"] },
+  { tier: "01.AI (Yi-Coder)", models: ["yi-coder-9b-chat","yi-coder-1.5b-chat","yi-lightning"] },
+  { tier: "BigCode / HuggingFace", models: ["starcoder2-15b","starcoder2-33b","starcoder-15b"] },
+  { tier: "Other code models", models: ["wizardcoder-33b-v1.1","phind-codellama-34b-v2","phi-4","phi-3.5-mini-instruct"] },
+];
+
 // Brand logo path data (24x24 viewBox, via simple-icons) for the dummy model list
 const MODEL_LOGOS: Record<string, string> = {
   "Max":
@@ -460,6 +474,8 @@ const MODEL_LOGOS: Record<string, string> = {
     "M12 2l3 7h7l-5.5 4.5 2 7.5-6.5-4.5L5.5 21l2-7.5L2 9h7z",
   "Amazon":
     "M3 16.5c6 3.5 12 3.5 18 0L22.5 19c-6.5 4-14.5 4-21 0z",
+  "BigCode":
+    "M12 3a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM5 15a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM19 15a3 3 0 1 1 0 6 3 3 0 0 1 0-6z",
 };
 
 // Resolve a brand logo for model ids (prefix-based)
@@ -477,6 +493,10 @@ const logoFor = (name: string): string | undefined => {
   if (name.startsWith("phi") || name.startsWith("wizardlm")) return MODEL_LOGOS["Microsoft"];
   if (name.startsWith("yi")) return MODEL_LOGOS["Yi"];
   if (name.startsWith("amazon")) return MODEL_LOGOS["Amazon"];
+  if (name.startsWith("codellama") || name.startsWith("wizardcoder")) return MODEL_LOGOS["Llama 4 Maverick"];
+  if (name.startsWith("codegemma")) return MODEL_LOGOS["Gemini 2.5 Pro"];
+  if (name.startsWith("starcoder")) return MODEL_LOGOS["BigCode"];
+  if (name.startsWith("yi")) return MODEL_LOGOS["Yi"];
   return MODEL_LOGOS["Max"];
 };
 
@@ -789,7 +809,7 @@ export const PromptInputBox = React.forwardRef(
                       Select a model
                     </p>
                     <div className="flex max-h-[46vh] flex-col gap-3 overflow-y-auto pr-1">
-                      {MODEL_TIERS.map((t) => (
+                      {(showCode ? CODE_MODEL_TIERS : MODEL_TIERS).map((t) => (
                         <div key={t.tier}>
                           <p className="mb-1.5 text-[10px] tracking-widest text-gray-500 uppercase">
                             {t.tier}
